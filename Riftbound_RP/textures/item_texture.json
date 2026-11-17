@@ -3,6 +3,7 @@
   "texture_name": "atlas.items",
   "texture_data": {
     "riftbound:rift_shard": { "textures": "textures/items/amethyst_shard" },
-    "riftbound:embersteel_ingot": { "textures": "textures/items/iron_ingot" }
+    "riftbound:embersteel_ingot": { "textures": "textures/items/iron_ingot" },
+    "riftbound:riftblade": { "textures": "textures/items/iron_sword" }
   }
 }

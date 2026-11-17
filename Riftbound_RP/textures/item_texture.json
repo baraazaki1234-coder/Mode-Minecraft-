@@ -2,7 +2,7 @@
   "resource_pack_name": "RIFTBOUND",
   "texture_name": "atlas.items",
   "texture_data": {
-    "rift_shard": { "textures": "textures/items/rift_shard" },
-    "embersteel_ingot": { "textures": "textures/items/embersteel_ingot" }
+    "riftbound:rift_shard": { "textures": "textures/items/amethyst_shard" },
+    "riftbound:embersteel_ingot": { "textures": "textures/items/iron_ingot" }
   }
 }

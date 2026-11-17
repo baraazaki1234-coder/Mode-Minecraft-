@@ -178,7 +178,11 @@ const HOSTILE_XP = {
   "minecraft:ravager": 8,
   "minecraft:warden": 25,
   "minecraft:wither": 35,
-  "minecraft:ender_dragon": 50
+  "minecraft:ender_dragon": 50,
+  "riftbound:ironback": 5,
+  "riftbound:glassfang": 4,
+  "riftbound:skitter": 3,
+  "riftbound:colossus": 30
 };
 
 function getOrCreateObjective(id, displayName) {

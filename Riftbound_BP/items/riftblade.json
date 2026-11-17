@@ -1,0 +1,25 @@
+{
+  "format_version": "1.26.60",
+  "minecraft:item": {
+    "description": {
+      "identifier": "riftbound:riftblade",
+      "menu_category": { "category": "equipment" }
+    },
+    "components": {
+      "minecraft:icon": "riftbound:riftblade",
+      "minecraft:display_name": { "value": "item.riftbound:riftblade" },
+      "minecraft:max_stack_size": 1,
+      "minecraft:hand_equipped": true,
+      "minecraft:damage": 8,
+      "minecraft:durability": {
+        "max_durability": 1650,
+        "damage_chance": { "min": 100, "max": 100 }
+      },
+      "minecraft:enchantable": {
+        "slot": "sword",
+        "value": 18
+      },
+      "minecraft:glint": true
+    }
+  }
+}

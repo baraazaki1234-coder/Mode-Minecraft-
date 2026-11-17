@@ -22,7 +22,7 @@ Explore and gather → earn rare Rift resources → craft signature gear → unl
 - Death penalties must be recoverable or time-limited; never erase a player's whole character.
 
 ## Multiplayer
-Teams are a starting point, not the complete PvP system. Future rules must distinguish allies, enemies, and neutral players and must be tested with four players. Voice chat is not part of a Bedrock add-on's normal scripting surface; any proximity/team/private-room voice feature will be designed as a separate companion service so it does not delay core gameplay.
+Teams are a starting point, not the complete PvP system. Future rules must distinguish allies, enemies, and neutral players and must be tested with four players.
 
 ## Scope control
 No random pile of dozens of ores, weapons, mobs, or dimensions. Additions must reinforce the core loop, have Arabic names and readable feedback, and pass multiplayer testing.

@@ -1,3 +1,7 @@
 item.riftbound:rift_shard=Rift Shard
 item.riftbound:embersteel_ingot=Embersteel Ingot
 item.riftbound:riftblade=Riftblade
+entity.riftbound:ironback.name=Ironback
+entity.riftbound:glassfang.name=Glassfang
+entity.riftbound:skitter.name=Skitter
+entity.riftbound:colossus.name=Rift Colossus

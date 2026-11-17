@@ -37,7 +37,7 @@ jobs:
           print('Pack linkage, script entry, API dependency, and locales OK')
           PY
       - name: Check JavaScript syntax
-        run: node --check Riftbound_BP/scripts/main.js
+        run: node --input-type=module --check < Riftbound_BP/scripts/main.js
       - name: Package add-on
         run: |
           mkdir -p dist

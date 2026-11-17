@@ -12,7 +12,8 @@
 - Rift Shard and Embersteel materials.
 - Riftblade weapon, crafting recipe, and Script API Speed surge.
 - Keep Inventory plus a recoverable Rift Shard death drop and temporary Weakness wound.
-- Four initial team-selection functions.
+- Four initial team-selection functions with Arabic feedback.
+- Player elimination scoring; kills against a tagged teammate do not award points.
 - CI checks for JSON, pack linkage, script entry, API dependency, locale files, and JavaScript syntax.
 
 ## Not implemented yet

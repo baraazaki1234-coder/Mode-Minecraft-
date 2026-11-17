@@ -203,7 +203,8 @@ function awardProgress(player, amount, reason) {
     if (newRank <= currentRank) return;
 
     rankObjective.setScore(player, newRank);
-    const rewardCount = newRank === 4 ? 2 : 1;
+    const ranksEarned = newRank - currentRank;
+    const rewardCount = ranksEarned + (newRank === 4 ? 1 : 0);
     player.dimension.spawnItem(new ItemStack(RIFT_SHARD, rewardCount), player.location);
 
     const effects = [
@@ -219,6 +220,7 @@ function awardProgress(player, amount, reason) {
     });
 
     player.sendMessage("§d✦ ارتقيت إلى الرتبة " + newRank + ": " + RANK_NAMES[newRank - 1]);
+    if (ranksEarned > 1) player.sendMessage("§7تجاوزت " + ranksEarned + " رتب دفعة واحدة.");
     player.sendMessage("§bحصلت على " + rewardCount + " شظية صدع ومكافأة مؤقتة.");
   } catch (error) {
     console.warn(`[RIFTBOUND] Progression update failed: ${error}`);

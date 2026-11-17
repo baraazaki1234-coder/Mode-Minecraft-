@@ -128,3 +128,116 @@ world.afterEvents.entityHitEntity.subscribe(({ damagingEntity }) => {
     console.warn(`[RIFTBOUND] Riftblade surge failed: ${error}`);
   }
 });
+
+
+// RIFTBOUND progression: mining rare ores and defeating hostile creatures
+// builds persistent XP. Rank rewards are granted once and survive death.
+const PROGRESSION_XP = "rb_xp";
+const PROGRESSION_RANK = "rb_rank";
+const RANK_THRESHOLDS = [12, 35, 70, 120];
+const RANK_NAMES = ["مستكشف الصدع", "صائد الشظايا", "حارس الصدع", "بطل الصدع"];
+const ORE_XP = {
+  "minecraft:coal_ore": 1,
+  "minecraft:deepslate_coal_ore": 1,
+  "minecraft:copper_ore": 1,
+  "minecraft:deepslate_copper_ore": 1,
+  "minecraft:iron_ore": 2,
+  "minecraft:deepslate_iron_ore": 2,
+  "minecraft:gold_ore": 3,
+  "minecraft:deepslate_gold_ore": 3,
+  "minecraft:redstone_ore": 2,
+  "minecraft:lit_redstone_ore": 2,
+  "minecraft:deepslate_redstone_ore": 2,
+  "minecraft:lit_deepslate_redstone_ore": 2,
+  "minecraft:lapis_ore": 2,
+  "minecraft:deepslate_lapis_ore": 2,
+  "minecraft:diamond_ore": 6,
+  "minecraft:deepslate_diamond_ore": 6,
+  "minecraft:emerald_ore": 6,
+  "minecraft:deepslate_emerald_ore": 6,
+  "minecraft:nether_quartz_ore": 1,
+  "minecraft:nether_gold_ore": 2,
+  "minecraft:ancient_debris": 10
+};
+const HOSTILE_XP = {
+  "minecraft:zombie": 2,
+  "minecraft:husk": 2,
+  "minecraft:drowned": 2,
+  "minecraft:skeleton": 2,
+  "minecraft:stray": 2,
+  "minecraft:spider": 2,
+  "minecraft:cave_spider": 3,
+  "minecraft:creeper": 3,
+  "minecraft:enderman": 4,
+  "minecraft:witch": 5,
+  "minecraft:blaze": 4,
+  "minecraft:ghast": 5,
+  "minecraft:piglin_brute": 6,
+  "minecraft:guardian": 5,
+  "minecraft:elder_guardian": 12,
+  "minecraft:ravager": 8,
+  "minecraft:warden": 25,
+  "minecraft:wither": 35,
+  "minecraft:ender_dragon": 50
+};
+
+function getOrCreateObjective(id, displayName) {
+  let objective = world.scoreboard.getObjective(id);
+  if (!objective) objective = world.scoreboard.addObjective(id, displayName);
+  return objective;
+}
+
+function awardProgress(player, amount, reason) {
+  if (!player || player.typeId !== "minecraft:player" || amount <= 0) return;
+
+  try {
+    const xpObjective = getOrCreateObjective(PROGRESSION_XP, "Rift XP");
+    const rankObjective = getOrCreateObjective(PROGRESSION_RANK, "Rift Rank");
+    const totalXp = xpObjective.addScore(player, amount);
+    const currentRank = rankObjective.getScore(player) ?? 0;
+
+    let newRank = currentRank;
+    while (newRank < RANK_THRESHOLDS.length && totalXp >= RANK_THRESHOLDS[newRank]) {
+      newRank++;
+    }
+    if (newRank <= currentRank) return;
+
+    rankObjective.setScore(player, newRank);
+    const rewardCount = newRank === 4 ? 2 : 1;
+    player.dimension.spawnItem(new ItemStack(RIFT_SHARD, rewardCount), player.location);
+
+    const effects = [
+      { id: "haste", duration: 20 * 20, amplifier: 0 },
+      { id: "speed", duration: 20 * 20, amplifier: 0 },
+      { id: "strength", duration: 20 * 15, amplifier: 0 },
+      { id: "resistance", duration: 20 * 15, amplifier: 0 }
+    ];
+    const reward = effects[newRank - 1];
+    player.addEffect(reward.id, reward.duration, {
+      amplifier: reward.amplifier,
+      showParticles: false
+    });
+
+    player.sendMessage("§d✦ ارتقيت إلى الرتبة " + newRank + ": " + RANK_NAMES[newRank - 1]);
+    player.sendMessage("§bحصلت على " + rewardCount + " شظية صدع ومكافأة مؤقتة.");
+  } catch (error) {
+    console.warn(`[RIFTBOUND] Progression update failed: ${error}`);
+  }
+}
+
+world.afterEvents.playerBreakBlock.subscribe((event) => {
+  try {
+    const blockId = event.brokenBlockPermutation.type.id;
+    const amount = ORE_XP[blockId] ?? 0;
+    if (amount > 0) awardProgress(event.player, amount, "mining");
+  } catch (error) {
+    console.warn(`[RIFTBOUND] Mining progression failed: ${error}`);
+  }
+});
+
+world.afterEvents.entityDie.subscribe((event) => {
+  const killer = event.damageSource?.damagingEntity;
+  if (!killer || killer.typeId !== "minecraft:player") return;
+  const amount = HOSTILE_XP[event.deadEntity.typeId] ?? 0;
+  if (amount > 0) awardProgress(killer, amount, "combat");
+});

@@ -16,7 +16,7 @@ jobs:
             python -m json.tool "$file" >/dev/null
             echo "OK: $file"
           done
-      - name: Check pack UUID linkage and script entry
+      - name: Check pack linkage, custom entities, and locales
         run: |
           python - <<'PY'
           import json
@@ -34,7 +34,15 @@ jobs:
           locales=json.load(open('Riftbound_RP/texts/languages.json'))
           for locale in locales:
               assert Path(f'Riftbound_RP/texts/{locale}.lang').is_file(), f'Missing locale file: {locale}'
-          print('Pack linkage, script entry, API dependency, and locales OK')
+          for entity_file in Path('Riftbound_BP/entities').glob('*.json'):
+              identifier=json.load(open(entity_file))['minecraft:entity']['description']['identifier']
+              client_file=Path('Riftbound_RP/entity') / (entity_file.stem + '.entity.json')
+              assert client_file.is_file(), f'Missing client entity for {identifier}'
+              client_id=json.load(open(client_file))['minecraft:client_entity']['description']['identifier']
+              assert identifier == client_id, f'Client/behavior identifier mismatch: {identifier} vs {client_id}'
+              spawn_file=Path('Riftbound_BP/spawn_rules') / entity_file.name
+              assert spawn_file.is_file(), f'Missing spawn rules for {identifier}'
+          print('Pack linkage, custom entity pairs, spawn rules, API dependency, and locales OK')
           PY
       - name: Check JavaScript syntax
         run: node --input-type=module --check < Riftbound_BP/scripts/main.js

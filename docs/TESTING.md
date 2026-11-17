@@ -9,7 +9,9 @@
 - [ ] Both packs import without manifest or Script API errors on Minecraft 26.62.
 - [ ] Arabic item names render correctly in the player's selected language.
 - [ ] Custom items appear with intended icons and names.
-- [ ] Recipes work in survival.
+- [ ] Riftblade crafting recipe works in survival.
+- [ ] Riftblade damage, durability, enchantability, and Speed burst behave as designed.
+- [ ] Riftblade Speed burst triggers only while held and respects the eight-second cooldown.
 - [ ] Four players can join the same world.
 - [ ] Team selection and PvP behavior work as intended.
 - [ ] Keep Inventory preserves the main inventory on death.

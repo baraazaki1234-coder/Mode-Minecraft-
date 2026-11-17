@@ -5,7 +5,7 @@
     "description": "A focused four-player survival and rivalry experience.",
     "uuid": "c18a2e61-7f6d-4f5a-8d12-1c6a7e4b9031",
     "version": [0, 1, 0],
-    "min_engine_version": [1, 21, 0]
+    "min_engine_version": [1, 26, 60]
   },
   "modules": [
     {

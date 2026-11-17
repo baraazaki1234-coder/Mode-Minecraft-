@@ -1,4 +1,4 @@
-import { world, system, ItemStack, EquipmentSlot } from "@minecraft/server";
+import { world, system, ItemStack, EquipmentSlot, InputPermissionCategory } from "@minecraft/server";
 
 const RIFT_SHARD = "riftbound:rift_shard";
 const RIFTBLADE = "riftbound:riftblade";
@@ -257,5 +257,182 @@ world.beforeEvents.entityHurt.subscribe((event) => {
   const attackerTeam = getRiftTeam(attacker);
   if (victimTeam && attackerTeam && victimTeam === attackerTeam) {
     event.cancel = true;
+  }
+});
+
+
+// First-entry cinematic. Bedrock's stable input-permission API can lock
+// movement and camera during the sequence; interaction buttons are not exposed
+// as a lockable category, so the script does not claim to disable every action.
+const INTRO_SEEN_TAG = "rb_intro_seen";
+const INTRO_LOCK_TAG = "rb_intro_lock";
+const INTRO_LINES = [
+  "هل لازم تثق في فريقك؟ ولا ممكن يغدروا بيك أول ما تيجي الفرصة؟",
+  "في العالم ده، القوة مش دايمًا في الحجم...",
+  "ممكن وحش ضخم يخليك تفكر ألف مرة قبل ما تقرب.",
+  "وممكن مخلوق صغير تستهين بيه... ويكون آخر حاجة تتوقعها.",
+  "لا تستهين بأي وحش، مهما كان صغيرًا أو بدا ضعيفًا.",
+  "راقب حركته، افهم طريقته، واختار وقت المواجهة.",
+  "خليك مستعد... لأن الصدع لا يرحم الغافلين."
+];
+
+function setIntroInputLock(player, locked) {
+  try {
+    // Import locally so the rest of the gameplay module remains usable if an
+    // older client rejects the input-permission API.
+    const { InputPermissionCategory } = require("@minecraft/server");
+    player.inputPermissions.setPermissionCategory(InputPermissionCategory.Movement, !locked);
+    player.inputPermissions.setPermissionCategory(InputPermissionCategory.Camera, !locked);
+  } catch (error) {
+    console.warn(`[RIFTBOUND] Input lock could not be changed: ${error}`);
+  }
+}
+
+function playIntro(player) {
+  if (player.hasTag(INTRO_SEEN_TAG)) return;
+
+  // Recover cleanly if the player disconnected or the script restarted mid-intro.
+  if (player.hasTag(INTRO_LOCK_TAG)) {
+    setIntroInputLock(player, false);
+    player.removeTag(INTRO_LOCK_TAG);
+  }
+
+  player.addTag(INTRO_LOCK_TAG);
+  setIntroInputLock(player, true);
+
+  let lineIndex = 0;
+  let charIndex = 0;
+  let pauseTicks = 0;
+  let currentLine = "";
+  let finished = false;
+
+  try {
+    player.onScreenDisplay.setTitle("§6RIFTBOUND", {
+      subtitle: "",
+      fadeInDuration: 8,
+      stayDuration: 1200,
+      fadeOutDuration: 10
+    });
+  } catch (error) {
+    console.warn(`[RIFTBOUND] Intro title failed: ${error}`);
+  }
+
+  const task = system.runInterval(() => {
+    try {
+      if (!player.isValid) {
+        system.clearRun(task);
+        return;
+      }
+
+      if (pauseTicks > 0) {
+        pauseTicks--;
+        return;
+      }
+
+      if (lineIndex >= INTRO_LINES.length) {
+        if (!finished) {
+          finished = true;
+          system.clearRun(task);
+          player.onScreenDisplay.setTitle("", { fadeOutDuration: 8 });
+          player.removeTag(INTRO_LOCK_TAG);
+          player.addTag(INTRO_SEEN_TAG);
+          setIntroInputLock(player, false);
+          player.sendMessage("§aبدأت رحلتك في RIFTBOUND. خليك صاحي لكل خطر.");
+        }
+        return;
+      }
+
+      const line = INTRO_LINES[lineIndex];
+      const chars = Array.from(line);
+      if (charIndex === 0) {
+        currentLine = "";
+        player.onScreenDisplay.updateSubtitle("");
+      }
+
+      if (charIndex < chars.length) {
+        currentLine += chars[charIndex];
+        charIndex++;
+        player.onScreenDisplay.updateSubtitle("§f" + currentLine);
+      } else {
+        lineIndex++;
+        charIndex = 0;
+        pauseTicks = 24;
+      }
+    } catch (error) {
+      system.clearRun(task);
+      try {
+        player.removeTag(INTRO_LOCK_TAG);
+        setIntroInputLock(player, false);
+      } catch {}
+      console.warn(`[RIFTBOUND] Intro sequence stopped safely: ${error}`);
+    }
+  }, 2);
+}
+
+world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
+  if (!initialSpawn) return;
+  system.runTimeout(() => playIntro(player), 20);
+});
+
+// Encounter cues and restrained combat feedback. Sounds are built-in Bedrock
+// sound events (not custom audio assets), with a per-player cooldown.
+const creatureCueCooldowns = new Map();
+function playCreatureCue(player, soundId, cooldown = 30) {
+  if (!player || player.typeId !== "minecraft:player") return;
+  const now = system.currentTick;
+  const last = creatureCueCooldowns.get(player.id) ?? -100000;
+  if (now - last < cooldown) return;
+  creatureCueCooldowns.set(player.id, now);
+  try {
+    player.playSound(soundId, { volume: 0.7, pitch: 0.9 });
+  } catch (error) {
+    console.warn(`[RIFTBOUND] Sound event unavailable (${soundId}): ${error}`);
+  }
+}
+
+world.afterEvents.entitySpawn.subscribe(({ entity }) => {
+  const cues = {
+    "riftbound:colossus": "mob.warden.heartbeat",
+    "riftbound:ironback": "mob.iron_golem.say",
+    "riftbound:glassfang": "mob.spider.say",
+    "riftbound:skitter": "mob.silverfish.say"
+  };
+  const soundId = cues[entity.typeId];
+  if (!soundId) return;
+
+  for (const player of world.getPlayers()) {
+    if (player.dimension.id !== entity.dimension.id) continue;
+    const dx = player.location.x - entity.location.x;
+    const dy = player.location.y - entity.location.y;
+    const dz = player.location.z - entity.location.z;
+    const distanceSquared = dx * dx + dy * dy + dz * dz;
+    if (distanceSquared <= 24 * 24) {
+      playCreatureCue(player, soundId, 20 * 12);
+    }
+  }
+});
+
+world.afterEvents.entityHitEntity.subscribe(({ damagingEntity, hitEntity }) => {
+  const customCreatures = new Set([
+    "riftbound:colossus",
+    "riftbound:ironback",
+    "riftbound:glassfang",
+    "riftbound:skitter"
+  ]);
+
+  if (damagingEntity.typeId === "minecraft:player" && customCreatures.has(hitEntity.typeId)) {
+    const sound = hitEntity.typeId === "riftbound:colossus"
+      ? "mob.warden.attack_impact"
+      : hitEntity.typeId === "riftbound:ironback"
+        ? "mob.iron_golem.hit"
+        : "mob.spider.say";
+    playCreatureCue(damagingEntity, sound, 8);
+  }
+
+  if (hitEntity.typeId === "minecraft:player" && customCreatures.has(damagingEntity.typeId)) {
+    const sound = damagingEntity.typeId === "riftbound:colossus"
+      ? "mob.warden.attack_impact"
+      : "mob.iron_golem.hit";
+    playCreatureCue(hitEntity, sound, 8);
   }
 });

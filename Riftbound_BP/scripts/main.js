@@ -241,3 +241,19 @@ world.afterEvents.entityDie.subscribe((event) => {
   const amount = HOSTILE_XP[event.deadEntity.typeId] ?? 0;
   if (amount > 0) awardProgress(killer, amount, "combat");
 });
+
+
+// Teammates cannot damage one another. The before-event cancels damage before
+// health is changed; players without a shared team remain free to fight.
+world.beforeEvents.entityHurt.subscribe((event) => {
+  const victim = event.hurtEntity;
+  const attacker = event.damageSource?.damagingEntity;
+  if (!victim || victim.typeId !== "minecraft:player") return;
+  if (!attacker || attacker.typeId !== "minecraft:player") return;
+
+  const victimTeam = getRiftTeam(victim);
+  const attackerTeam = getRiftTeam(attacker);
+  if (victimTeam && attackerTeam && victimTeam === attackerTeam) {
+    event.cancel = true;
+  }
+});

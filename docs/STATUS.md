@@ -4,27 +4,27 @@
 - Repository: `baraazaki1234-coder/Mode-Minecraft-`
 - Branch: `main`
 - Write access: verified.
-- Latest baseline build passed automated validation and packaging; the new progression changes require their own CI run.
 
 ## Implemented in source
 - Behavior Pack and Resource Pack manifests with linked UUIDs.
-- Arabic (`ar_SA`) and English (`en_US`) item localization.
-- Rift Shard and Embersteel materials.
-- Riftblade weapon, crafting recipe, and Script API Speed surge.
-- Persistent mining/combat XP tracked in scoreboards.
-- Four progression ranks with one-time Rift Shard rewards and short rank-up effects.
-- Mining XP for overworld/nether ores and Ancient Debris; combat XP for a curated list of hostile mobs and bosses.
-- Keep Inventory plus a recoverable Rift Shard death drop and temporary Weakness wound.
-- Four initial team-selection functions with Arabic feedback.
-- Player elimination scoring; kills against a tagged teammate do not award points.
-- Same-team player damage is canceled by the Script API before hurt is applied.
-- CI checks for JSON, pack linkage, script entry, API dependency, locale files, and JavaScript syntax.
+- Arabic (`ar_SA`) and English (`en_US`) localization for items and the first four custom creatures.
+- Rift Shard, Embersteel Ingot, Riftblade, and the weapon's short Speed surge.
+- Persistent mining/combat XP, four ranks, and one-time rank rewards.
+- Keep Inventory with one recoverable Rift Shard death drop and a temporary Weakness wound.
+- Four team-selection functions, same-team player damage cancellation, and elimination scoring.
+- Four custom behavior entities with separate combat profiles: armored slow Ironback, fragile high-damage Glassfang, tiny fast Skitter, and giant slow Rift Colossus with boss HUD.
+- Spawn-rule files and matching client-entity definitions for the first creature group.
+- Per-player first-entry Arabic typewriter intro, with movement and camera input disabled during the sequence and restored afterward.
+- Built-in encounter/combat sound cues with cooldown protection.
+- CI validation for JSON, pack linkage, script entry, API dependency, entity/client ID pairs, spawn rules, locales, and JavaScript syntax.
 
-## Not implemented yet
+## Not implemented or not verified yet
+- Custom original creature models and textures; current client definitions use vanilla geometry/texture stand-ins.
+- Original sound files, custom particles, and bespoke attack animations.
+- Directional Ironback armor; current first pass reduces melee/projectile damage generally rather than checking the exact hit direction.
+- Additional creature families, pets/army commands, advanced armor/weapon tiers, custom biomes, and unlockable dimensions.
 - In-game verification on Minecraft 26.62 and four-player mobile testing.
-- Finished custom textures, models, and visual effects.
-- Full team-safe PvP rules, advanced gear tiers, custom creatures, biomes, and unlockable dimensions.
-- Final progression balance and survival-economy testing.
+- Final balance and performance testing.
 
 ## Release rule
 Do not call this a stable or finished add-on until it imports, activates, and passes copied-world tests on the target Android version with multiple players. Keep a backup of the world.

@@ -21,7 +21,7 @@ A Minecraft Bedrock multiplayer add-on built around a shared survival world, mea
 - Persistent progression XP from mining valuable ores and defeating hostile creatures.
 - Four progression ranks with one-time Rift Shard rewards and short rank-up effects.
 - Death penalty that preserves the main inventory, drops one carried Rift Shard at the death site, and applies a short Weakness wound after respawn.
-- Arabic team-selection feedback and player elimination scoring.
+- Four team identities with Arabic selection feedback, friendly-fire cancellation for tagged teammates, and player elimination scoring.
 
 ## Current status
 The source is packaged by GitHub Actions and passes automated JSON, pack-linkage, locale-file, and JavaScript syntax checks. It is **not yet verified inside Minecraft**. The progression loop is an initial gameplay foundation; custom art, deeper gear tiers, creatures, biomes, and unlockable dimensions remain in development. Back up your world before testing.

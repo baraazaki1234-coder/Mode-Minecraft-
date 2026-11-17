@@ -270,6 +270,7 @@ world.beforeEvents.entityHurt.subscribe((event) => {
 // as a lockable category, so the script does not claim to disable every action.
 const INTRO_SEEN_TAG = "rb_intro_seen";
 const INTRO_LOCK_TAG = "rb_intro_lock";
+const introPermissionStates = new Map();
 const INTRO_LINES = [
   "هل لازم تثق في فريقك؟ ولا ممكن يغدروا بيك أول ما تيجي الفرصة؟",
   "في العالم ده، القوة مش دايمًا في الحجم...",
@@ -282,11 +283,21 @@ const INTRO_LINES = [
 
 function setIntroInputLock(player, locked) {
   try {
-    // Import locally so the rest of the gameplay module remains usable if an
-    // older client rejects the input-permission API.
-    const { InputPermissionCategory } = require("@minecraft/server");
-    player.inputPermissions.setPermissionCategory(InputPermissionCategory.Movement, !locked);
-    player.inputPermissions.setPermissionCategory(InputPermissionCategory.Camera, !locked);
+    if (locked) {
+      if (!introPermissionStates.has(player.id)) {
+        introPermissionStates.set(player.id, {
+          movement: player.inputPermissions.isPermissionCategoryEnabled(InputPermissionCategory.Movement),
+          camera: player.inputPermissions.isPermissionCategoryEnabled(InputPermissionCategory.Camera)
+        });
+      }
+      player.inputPermissions.setPermissionCategory(InputPermissionCategory.Movement, false);
+      player.inputPermissions.setPermissionCategory(InputPermissionCategory.Camera, false);
+    } else {
+      const previous = introPermissionStates.get(player.id);
+      player.inputPermissions.setPermissionCategory(InputPermissionCategory.Movement, previous?.movement ?? true);
+      player.inputPermissions.setPermissionCategory(InputPermissionCategory.Camera, previous?.camera ?? true);
+      introPermissionStates.delete(player.id);
+    }
   } catch (error) {
     console.warn(`[RIFTBOUND] Input lock could not be changed: ${error}`);
   }
@@ -439,4 +450,11 @@ world.afterEvents.entityHitEntity.subscribe(({ damagingEntity, hitEntity }) => {
       : "mob.iron_golem.hit";
     playCreatureCue(hitEntity, sound, 8);
   }
+});
+
+
+world.afterEvents.playerLeave.subscribe(({ playerId }) => {
+  surgeCooldowns.delete(playerId);
+  creatureCueCooldowns.delete(playerId);
+  introPermissionStates.delete(playerId);
 });

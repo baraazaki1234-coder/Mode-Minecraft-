@@ -22,6 +22,7 @@
       "minecraft:knockback_resistance": { "value": 1.0 },
       "minecraft:attack": { "damage": 16 },
       "minecraft:follow_range": { "value": 30 },
+      "minecraft:boss": { "name": "عملاق الصدع", "hud_range": 64, "should_darken_sky": true },
       "minecraft:behavior.float": { "priority": 0 },
       "minecraft:behavior.nearest_attackable_target": {
         "priority": 1,

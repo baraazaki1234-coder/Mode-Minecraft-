@@ -19,7 +19,7 @@ A focused Minecraft Bedrock multiplayer add-on project for a small survival grou
 - Rift Shard and Embersteel progression materials.
 - Riftblade signature weapon with a short Speed surge on hit and an eight-second cooldown.
 - Death penalty that preserves the main inventory, drops one carried Rift Shard at the death site, and applies a short Weakness wound after respawn.
-- Initial team-selection functions.
+- Arabic team-selection feedback and player elimination scoring.
 
 ## Current status
 The source builds and passes automated JSON, pack-linkage, locale-file, and JavaScript syntax checks. It is **not yet verified inside Minecraft**. Custom art, additional progression tiers, creatures, biomes, and unlockable dimensions remain in development. Back up your world before testing.

@@ -7,11 +7,42 @@ const WOUND_TICKS = 20 * 15;
 const SURGE_COOLDOWN_TICKS = 20 * 8;
 const surgeCooldowns = new Set();
 
+function getRiftTeam(player) {
+  const tags = player.getTags();
+  const teams = ["ember", "grove", "tide", "void"];
+  return teams.find((team) => tags.includes(`rb_${team}`)) ?? null;
+}
+
+function awardPlayerElimination(victim, killer) {
+  if (!killer || killer.typeId !== "minecraft:player" || killer.id === victim.id) return;
+
+  const killerTeam = getRiftTeam(killer);
+  const victimTeam = getRiftTeam(victim);
+  if (killerTeam && victimTeam && killerTeam === victimTeam) {
+    killer.sendMessage("§cلا تحصل على نقاط عند إسقاط أحد أفراد فريقك.");
+    return;
+  }
+
+  try {
+    let objective = world.scoreboard.getObjective("rb_score");
+    if (!objective) {
+      objective = world.scoreboard.addObjective("rb_score", "RIFTBOUND");
+      world.scoreboard.setObjectiveAtDisplaySlot("Sidebar", { objective });
+    }
+    objective.addScore(killer, 1);
+    killer.sendMessage("§6+1 §fنقطة إقصاء §7| §e" + (victim.name || "خصم"));
+  } catch (error) {
+    console.warn(`[RIFTBOUND] Could not award elimination score: ${error}`);
+  }
+}
+
 // Keep Inventory protects the player's main run. A carried Rift Shard becomes
 // a recoverable drop at the death site; every death also causes a brief wound.
 world.afterEvents.entityDie.subscribe((event) => {
   const player = event.deadEntity;
   if (player.typeId !== "minecraft:player") return;
+
+  awardPlayerElimination(player, event.damageSource?.damagingEntity);
 
   try {
     player.setDynamicProperty(WOUND_PROPERTY, true);

@@ -1,3 +1,7 @@
 item.riftbound:rift_shard=شظية الصدع
 item.riftbound:embersteel_ingot=سبيكة الفولاذ اللهبي
 item.riftbound:riftblade=نصل الصدع
+entity.riftbound:ironback.name=المدرّع الحجري
+entity.riftbound:glassfang.name=الناب الزجاجي
+entity.riftbound:skitter.name=الزاحف الخاطف
+entity.riftbound:colossus.name=عملاق الصدع

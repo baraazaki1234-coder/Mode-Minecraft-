@@ -4,39 +4,53 @@ const RIFT_SHARD = "riftbound:rift_shard";
 const WOUND_PROPERTY = "riftbound:pending_wound";
 const WOUND_TICKS = 20 * 15;
 
-// Keep the player's main inventory on death, but make a carried Rift Shard
-// recoverable at the death site. A short wound still applies if no shard exists.
+// Keep Inventory protects the main run. A carried Rift Shard becomes a
+// recoverable drop at the death site; every death also causes a brief wound.
 world.afterEvents.entityDie.subscribe((event) => {
   const player = event.deadEntity;
   if (player.typeId !== "minecraft:player") return;
 
-  let droppedShard = false;
+  // Set the wound first so an inventory or drop error cannot cancel it.
+  try {
+    player.setDynamicProperty(WOUND_PROPERTY, true);
+  } catch (error) {
+    console.warn(`[RIFTBOUND] Could not record death wound: ${error}`);
+  }
+
   try {
     const inventory = player.getComponent("minecraft:inventory")?.container;
-    if (inventory) {
-      for (let slot = 0; slot < inventory.size; slot++) {
-        const stack = inventory.getItem(slot);
-        if (!stack || stack.typeId !== RIFT_SHARD) continue;
+    if (!inventory) return;
 
-        if (stack.amount > 1) {
-          stack.amount -= 1;
+    for (let slot = 0; slot < inventory.size; slot++) {
+      const stack = inventory.getItem(slot);
+      if (!stack || stack.typeId !== RIFT_SHARD) continue;
+
+      // Remove one shard, then place it at the death site. If spawning fails,
+      // restore the original stack so the player does not lose it unfairly.
+      const originalAmount = stack.amount;
+      try {
+        if (originalAmount > 1) {
+          stack.amount = originalAmount - 1;
           inventory.setItem(slot, stack);
         } else {
           inventory.setItem(slot, undefined);
         }
 
         player.dimension.spawnItem(new ItemStack(RIFT_SHARD, 1), player.location);
-        droppedShard = true;
-        break;
+      } catch (dropError) {
+        const current = inventory.getItem(slot);
+        if (current && current.typeId === RIFT_SHARD) {
+          current.amount = originalAmount;
+          inventory.setItem(slot, current);
+        } else {
+          inventory.setItem(slot, new ItemStack(RIFT_SHARD, originalAmount));
+        }
+        console.warn(`[RIFTBOUND] Shard recovery drop failed; inventory restored: ${dropError}`);
       }
+      break;
     }
-    player.setDynamicProperty(WOUND_PROPERTY, true);
   } catch (error) {
-    console.warn(`[RIFTBOUND] Death penalty could not be applied: ${error}`);
-  }
-
-  if (droppedShard) {
-    console.warn("[RIFTBOUND] A Rift Shard was left at a player's death site.");
+    console.warn(`[RIFTBOUND] Death inventory handling failed: ${error}`);
   }
 });
 

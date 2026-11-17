@@ -1,16 +1,18 @@
-import { world, system, ItemStack } from "@minecraft/server";
+import { world, system, ItemStack, EquipmentSlot } from "@minecraft/server";
 
 const RIFT_SHARD = "riftbound:rift_shard";
+const RIFTBLADE = "riftbound:riftblade";
 const WOUND_PROPERTY = "riftbound:pending_wound";
 const WOUND_TICKS = 20 * 15;
+const SURGE_COOLDOWN_TICKS = 20 * 8;
+const surgeCooldowns = new Set();
 
-// Keep Inventory protects the main run. A carried Rift Shard becomes a
-// recoverable drop at the death site; every death also causes a brief wound.
+// Keep Inventory protects the player's main run. A carried Rift Shard becomes
+// a recoverable drop at the death site; every death also causes a brief wound.
 world.afterEvents.entityDie.subscribe((event) => {
   const player = event.deadEntity;
   if (player.typeId !== "minecraft:player") return;
 
-  // Set the wound first so an inventory or drop error cannot cancel it.
   try {
     player.setDynamicProperty(WOUND_PROPERTY, true);
   } catch (error) {
@@ -25,8 +27,6 @@ world.afterEvents.entityDie.subscribe((event) => {
       const stack = inventory.getItem(slot);
       if (!stack || stack.typeId !== RIFT_SHARD) continue;
 
-      // Remove one shard, then place it at the death site. If spawning fails,
-      // restore the original stack so the player does not lose it unfairly.
       const originalAmount = stack.amount;
       try {
         if (originalAmount > 1) {
@@ -35,7 +35,6 @@ world.afterEvents.entityDie.subscribe((event) => {
         } else {
           inventory.setItem(slot, undefined);
         }
-
         player.dimension.spawnItem(new ItemStack(RIFT_SHARD, 1), player.location);
       } catch (dropError) {
         const current = inventory.getItem(slot);
@@ -71,4 +70,30 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
       console.warn(`[RIFTBOUND] Respawn wound could not be applied: ${error}`);
     }
   }, 1);
+});
+
+// The Riftblade grants a short burst of speed on a successful melee hit.
+// An eight-second personal cooldown keeps the effect useful without spamming.
+world.afterEvents.entityHitEntity.subscribe(({ damagingEntity }) => {
+  const player = damagingEntity;
+  if (player.typeId !== "minecraft:player") return;
+
+  try {
+    const equipment = player.getComponent("minecraft:equippable");
+    const held = equipment?.getEquipment(EquipmentSlot.Mainhand);
+    if (!held || held.typeId !== RIFTBLADE) return;
+
+    const key = player.id;
+    if (surgeCooldowns.has(key)) return;
+
+    surgeCooldowns.add(key);
+    player.addEffect("speed", 20 * 3, {
+      amplifier: 0,
+      showParticles: false
+    });
+    player.sendMessage("§bاندفاع الصدع!");
+    system.runTimeout(() => surgeCooldowns.delete(key), SURGE_COOLDOWN_TICKS);
+  } catch (error) {
+    console.warn(`[RIFTBOUND] Riftblade surge failed: ${error}`);
+  }
 });

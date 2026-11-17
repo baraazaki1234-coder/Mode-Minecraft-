@@ -16,22 +16,31 @@ jobs:
             python -m json.tool "$file" >/dev/null
             echo "OK: $file"
           done
-      - name: Check pack UUID linkage
+      - name: Check pack UUID linkage and script entry
         run: |
           python - <<'PY'
           import json
+          from pathlib import Path
           bp=json.load(open('Riftbound_BP/manifest.json'))
           rp=json.load(open('Riftbound_RP/manifest.json'))
           dep=bp.get('dependencies', [])
           assert any(x.get('uuid') == rp['header']['uuid'] and x.get('version') == rp['header']['version'] for x in dep), 'Behavior pack dependency does not match resource pack'
           assert bp['header']['uuid'] != bp['modules'][0]['uuid']
           assert rp['header']['uuid'] != rp['modules'][0]['uuid']
-          print('Pack UUID linkage OK')
+          scripts=[m for m in bp['modules'] if m.get('type') == 'script']
+          assert len(scripts) == 1, 'Expected exactly one script module'
+          assert Path('Riftbound_BP', scripts[0]['entry']).is_file(), 'Script entry file is missing'
+          assert any(x.get('module_name') == '@minecraft/server' and x.get('version') == '2.6.0' for x in dep), 'Stable Script API dependency is missing'
+          locales=json.load(open('Riftbound_RP/texts/languages.json'))
+          for locale in locales:
+              assert Path(f'Riftbound_RP/texts/{locale}.lang').is_file(), f'Missing locale file: {locale}'
+          print('Pack linkage, script entry, API dependency, and locales OK')
           PY
+      - name: Check JavaScript syntax
+        run: node --check Riftbound_BP/scripts/main.js
       - name: Package add-on
         run: |
           mkdir -p dist
-          cd .
           zip -qr dist/RIFTBOUND.mcaddon Riftbound_BP Riftbound_RP
           zip -qr dist/RIFTBOUND-Source.zip Riftbound_BP Riftbound_RP docs README.md
       - uses: actions/upload-artifact@v4

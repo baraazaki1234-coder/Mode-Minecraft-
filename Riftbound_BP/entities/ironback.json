@@ -21,6 +21,12 @@
       "minecraft:knockback_resistance": { "value": 0.85 },
       "minecraft:attack": { "damage": 3 },
       "minecraft:follow_range": { "value": 20 },
+      "minecraft:damage_sensor": {
+        "triggers": [
+          { "cause": "entity_attack", "damage_multiplier": 0.3 },
+          { "cause": "projectile", "damage_multiplier": 0.3 }
+        ]
+      },
       "minecraft:behavior.float": { "priority": 0 },
       "minecraft:behavior.nearest_attackable_target": {
         "priority": 1,

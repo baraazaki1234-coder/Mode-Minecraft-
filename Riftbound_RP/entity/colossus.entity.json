@@ -5,7 +5,7 @@
       "identifier": "riftbound:colossus",
       "materials": { "default": "entity_alphatest" },
       "textures": { "default": "textures/entity/iron_golem/iron_golem" },
-      "geometry": { "default": "geometry.iron_golem" },
+      "geometry": { "default": "geometry.irongolem" },
       "render_controllers": ["controller.render.default"]
     }
   }

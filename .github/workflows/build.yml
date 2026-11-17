@@ -1,0 +1,41 @@
+name: Validate and package RIFTBOUND
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate JSON files
+        run: |
+          find Riftbound_BP Riftbound_RP -name '*.json' -print0 | while IFS= read -r -d '' file; do
+            python -m json.tool "$file" >/dev/null
+            echo "OK: $file"
+          done
+      - name: Check pack UUID linkage
+        run: |
+          python - <<'PY'
+          import json
+          bp=json.load(open('Riftbound_BP/manifest.json'))
+          rp=json.load(open('Riftbound_RP/manifest.json'))
+          dep=bp.get('dependencies', [])
+          assert any(x.get('uuid') == rp['header']['uuid'] and x.get('version') == rp['header']['version'] for x in dep), 'Behavior pack dependency does not match resource pack'
+          assert bp['header']['uuid'] != bp['modules'][0]['uuid']
+          assert rp['header']['uuid'] != rp['modules'][0]['uuid']
+          print('Pack UUID linkage OK')
+          PY
+      - name: Package add-on
+        run: |
+          mkdir -p dist
+          cd .
+          zip -qr dist/RIFTBOUND.mcaddon Riftbound_BP Riftbound_RP
+          zip -qr dist/RIFTBOUND-Source.zip Riftbound_BP Riftbound_RP docs README.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RIFTBOUND-build
+          path: dist/*
+          if-no-files-found: error

@@ -5,7 +5,7 @@
     "description": "Visual resources for RIFTBOUND.",
     "uuid": "d4e8a1c7-2b65-49f0-9c31-8a7d5e2f6049",
     "version": [0, 1, 0],
-    "min_engine_version": [1, 21, 0]
+    "min_engine_version": [1, 26, 60]
   },
   "modules": [
     {

@@ -1,0 +1,23 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "riftbound:riftblade"
+    },
+    "tags": ["crafting_table"],
+    "pattern": [
+      " R ",
+      " I ",
+      " S "
+    ],
+    "key": {
+      "R": { "item": "riftbound:rift_shard" },
+      "I": { "item": "riftbound:embersteel_ingot" },
+      "S": { "item": "stick" }
+    },
+    "result": {
+      "item": "riftbound:riftblade",
+      "count": 1
+    }
+  }
+}

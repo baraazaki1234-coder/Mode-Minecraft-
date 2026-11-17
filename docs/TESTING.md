@@ -13,6 +13,9 @@
 - [ ] Riftblade damage, durability, enchantability, and Speed burst behave as designed.
 - [ ] Riftblade Speed burst triggers only while held and respects the eight-second cooldown.
 - [ ] Four players can join the same world.
+- [ ] Player eliminations award one point on the RIFTBOUND sidebar.
+- [ ] Killing a player on the same tagged team does not award a point.
+- [ ] Arabic team-selection messages render correctly.
 - [ ] Team selection and PvP behavior work as intended.
 - [ ] Keep Inventory preserves the main inventory on death.
 - [ ] A carried Rift Shard drops at the death location and can be recovered.

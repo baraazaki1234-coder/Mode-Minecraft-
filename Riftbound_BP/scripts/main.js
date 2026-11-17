@@ -408,7 +408,7 @@ function playCreatureCue(player, soundId, cooldown = 30) {
 world.afterEvents.entitySpawn.subscribe(({ entity }) => {
   const cues = {
     "riftbound:colossus": "mob.warden.heartbeat",
-    "riftbound:ironback": "mob.iron_golem.say",
+    "riftbound:ironback": "mob.irongolem.walk",
     "riftbound:glassfang": "mob.spider.say",
     "riftbound:skitter": "mob.silverfish.say"
   };
@@ -437,17 +437,17 @@ world.afterEvents.entityHitEntity.subscribe(({ damagingEntity, hitEntity }) => {
 
   if (damagingEntity.typeId === "minecraft:player" && customCreatures.has(hitEntity.typeId)) {
     const sound = hitEntity.typeId === "riftbound:colossus"
-      ? "mob.warden.attack_impact"
+      ? "mob.warden.attack"
       : hitEntity.typeId === "riftbound:ironback"
-        ? "mob.iron_golem.hit"
+        ? "mob.irongolem.hit"
         : "mob.spider.say";
     playCreatureCue(damagingEntity, sound, 8);
   }
 
   if (hitEntity.typeId === "minecraft:player" && customCreatures.has(damagingEntity.typeId)) {
     const sound = damagingEntity.typeId === "riftbound:colossus"
-      ? "mob.warden.attack_impact"
-      : "mob.iron_golem.hit";
+      ? "mob.warden.attack"
+      : "mob.irongolem.hit";
     playCreatureCue(hitEntity, sound, 8);
   }
 });

@@ -31,6 +31,20 @@ function awardPlayerElimination(victim, killer) {
     }
     objective.addScore(killer, 1);
     killer.sendMessage("§6+1 §fنقطة إقصاء §7| §e" + (victim.name || "خصم"));
+    if (killerTeam) {
+      const warObjective = getOrCreateObjective(`rb_war_${killerTeam}`, `War ${killerTeam}`);
+      const factionScore = warObjective.addScore("team", 2);
+      killer.sendMessage("§c⚔ +2 نقاط حرب لفريقك §7| إجمالي الفريق: " + factionScore);
+      world.sendMessage(`§c⚔ ${killer.name} حقق إقصاءً لفريق ${killerTeam}. نقاط الحرب: ${factionScore}`);
+    }
+    try {
+      const streak = getOrCreateObjective("rb_streak", "Rift Streak");
+      const next = streak.addScore(killer, 1);
+      streak.setScore(victim, 0);
+      if (next >= 3) killer.sendMessage("§6سلسلة قتالية: " + next + " إقصاءات!");
+    } catch (error) {
+      console.warn(`[RIFTBOUND] War streak update failed: ${error}`);
+    }
   } catch (error) {
     console.warn(`[RIFTBOUND] Could not award elimination score: ${error}`);
   }
@@ -248,7 +262,23 @@ world.afterEvents.entityDie.subscribe((event) => {
   const killer = event.damageSource?.damagingEntity;
   if (!killer || killer.typeId !== "minecraft:player") return;
   const amount = HOSTILE_XP[event.deadEntity.typeId] ?? 0;
-  if (amount > 0) awardProgress(killer, amount, "combat");
+  if (amount > 0) {
+    awardProgress(killer, amount, "combat");
+    const killerTeam = getRiftTeam(killer);
+    if (killerTeam) {
+      for (const ally of world.getPlayers()) {
+        if (ally.id === killer.id || getRiftTeam(ally) !== killerTeam) continue;
+        if (ally.dimension.id !== killer.dimension.id) continue;
+        const dx = ally.location.x - event.deadEntity.location.x;
+        const dy = ally.location.y - event.deadEntity.location.y;
+        const dz = ally.location.z - event.deadEntity.location.z;
+        if (dx * dx + dy * dy + dz * dz <= 12 * 12) {
+          awardProgress(ally, 1, "team_assist");
+          ally.sendMessage("§a+1 خبرة تعاون §7| مساندة فريقك في إسقاط عدو.");
+        }
+      }
+    }
+  }
 });
 
 
@@ -267,6 +297,36 @@ world.beforeEvents.entityHurt.subscribe((event) => {
   }
 });
 
+
+// Nearby squad members provide a short defensive response when a teammate is hurt.
+const squadSupportCooldowns = new Map();
+world.afterEvents.entityHurt.subscribe(({ hurtEntity }) => {
+  if (hurtEntity.typeId !== "minecraft:player") return;
+  const team = getRiftTeam(hurtEntity);
+  if (!team) return;
+  const now = system.currentTick;
+  if (now - (squadSupportCooldowns.get(hurtEntity.id) ?? -100000) < 20 * 10) return;
+  const nearbyAllies = world.getPlayers().filter((ally) => {
+    if (ally.id === hurtEntity.id || getRiftTeam(ally) !== team) return false;
+    if (ally.dimension.id !== hurtEntity.dimension.id) return false;
+    const dx = ally.location.x - hurtEntity.location.x;
+    const dy = ally.location.y - hurtEntity.location.y;
+    const dz = ally.location.z - hurtEntity.location.z;
+    return dx * dx + dy * dy + dz * dz <= 8 * 8;
+  });
+  if (!nearbyAllies.length) return;
+  squadSupportCooldowns.set(hurtEntity.id, now);
+  try {
+    hurtEntity.addEffect("resistance", 40, { amplifier: 0, showParticles: false });
+    for (const ally of nearbyAllies) {
+      ally.addEffect("speed", 40, { amplifier: 0, showParticles: false });
+      ally.sendMessage("§aمساندة ناجحة! زميلك يتعرض للهجوم؛ تحرك لمساعدته.");
+    }
+    hurtEntity.sendMessage("§bتكاتف الفريق! تلقيت حماية قصيرة بوجود حليف قريب.");
+  } catch (error) {
+    console.warn(`[RIFTBOUND] Squad support effect failed: ${error}`);
+  }
+});
 
 // First-entry cinematic. Bedrock's stable input-permission API can lock
 // movement and camera during the sequence; interaction buttons are not exposed
@@ -465,5 +525,6 @@ world.afterEvents.entityHitEntity.subscribe(({ damagingEntity, hitEntity }) => {
 world.afterEvents.playerLeave.subscribe(({ playerId }) => {
   surgeCooldowns.delete(playerId);
   creatureCueCooldowns.delete(playerId);
+  squadSupportCooldowns.delete(playerId);
   introPermissionStates.delete(playerId);
 });

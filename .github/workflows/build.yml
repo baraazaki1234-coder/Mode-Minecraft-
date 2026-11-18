@@ -73,7 +73,11 @@ jobs:
               assert comp['minecraft:wearable']['slot'] == slot and comp['minecraft:wearable']['protection'] > 0
               assert comp['minecraft:durability']['max_durability'] > 0
           assert 'riftbound:riftbreaker' in json.load(open('Riftbound_RP/textures/item_texture.json'))['texture_data']
-          print('Pack linkage, seven creature pairs, spawn ecology, encounter AI, progression gear, recipes, API dependency, and locales OK')
+          script = Path('Riftbound_BP/scripts/main.js').read_text()
+          for token in ('rb_war_', 'rb_streak', 'team_assist', 'squadSupportCooldowns', 'Resistance'):
+              assert token in script, f'Missing multiplayer feature: {token}'
+          assert 'world.afterEvents.entityHurt.subscribe' in script
+          print('Pack linkage, creatures, gear, recipes, war scoring, squad support, API dependency, and locales OK')
           PY
       - name: Check JavaScript syntax
         run: node --input-type=module --check < Riftbound_BP/scripts/main.js

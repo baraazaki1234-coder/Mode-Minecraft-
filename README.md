@@ -19,6 +19,7 @@ A Minecraft Bedrock multiplayer add-on built around a shared survival world, mea
 - Arabic and English item and creature-name localization.
 - Rift Shard and Embersteel progression materials.
 - Emberguard four-piece armor set with crafted survival recipes and a heavy Riftbreaker axe.
+- Teamplay and war layer: nearby expedition assists, squad support when an ally is attacked, faction war points for enemy eliminations, and personal combat streaks.
 - Riftblade signature weapon with a short Speed surge on hit and an eight-second cooldown.
 - Persistent progression XP from mining valuable ores and defeating hostile creatures.
 - Four progression ranks with one-time Rift Shard rewards and short rank-up effects.

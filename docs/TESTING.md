@@ -31,3 +31,15 @@
 - [ ] Respawn applies exactly one 15-second Weakness wound, not on first join.
 - [ ] Repeated deaths do not duplicate or delete Rift Shards unexpectedly.
 - [ ] No repeated script errors or noticeable mobile performance regression.
+
+
+## Cooperation and war — in-game
+- [ ] Nearby teammates receive +1 Rift XP when a player kills a hostile creature within 12 blocks.
+- [ ] Players outside the assist radius or in another dimension receive no assist XP.
+- [ ] When a tagged player is hurt with a teammate within 8 blocks, the injured player receives brief Resistance and the ally receives brief Speed.
+- [ ] Squad support does not trigger more than once per injured player per ten seconds.
+- [ ] Enemy player elimination adds two points to the killer's faction war objective and one personal elimination point.
+- [ ] Same-team PvP remains cancelled and cannot award war points.
+- [ ] Personal streak increments for eliminations and resets for the victim.
+- [ ] War announcements and Arabic support messages display correctly.
+- [ ] Four-player mobile combat remains responsive with no repeated script errors.

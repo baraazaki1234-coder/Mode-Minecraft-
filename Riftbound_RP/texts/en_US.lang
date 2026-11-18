@@ -13,3 +13,5 @@ item.riftbound:emberguard_chestplate=Emberguard Chestplate
 item.riftbound:emberguard_leggings=Emberguard Leggings
 item.riftbound:emberguard_boots=Emberguard Boots
 item.riftbound:riftbreaker=Riftbreaker
+message.riftbound:war_points=War Points
+message.riftbound:team_assist=Team Assist XP

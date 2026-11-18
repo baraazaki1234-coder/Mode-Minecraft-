@@ -12,8 +12,8 @@
 - Persistent mining/combat XP, four ranks, and one-time rank rewards.
 - Keep Inventory with one recoverable Rift Shard death drop and a temporary Weakness wound.
 - Four team-selection functions, same-team player damage cancellation, and elimination scoring.
-- Four custom behavior entities with separate combat profiles: armored slow Ironback, fragile high-damage Glassfang, tiny fast Skitter, and giant slow Rift Colossus with boss HUD.
-- Spawn-rule files and matching client-entity definitions for the first creature group.
+- Seven custom behavior entities with separate combat profiles and deliberate ecology: solo Ironback (forest/mountain), desert Glassfang (solo/pairs), underground Skitter (packs), solo underground Hollowmaw, underground Gloommite (packs), forest/taiga Thornprowler (solo), and rare mountain Rift Colossus (solo boss).
+- Matching spawn-rule files and client-entity definitions for all seven creatures; see `docs/CREATURE_ECOLOGY.md`.
 - Per-player first-entry Arabic typewriter intro, with movement and camera input disabled during the sequence and restored afterward.
 - Built-in encounter/combat sound cues with cooldown protection.
 - CI validation for JSON, pack linkage, script entry, API dependency, entity/client ID pairs, spawn rules, locales, and JavaScript syntax.
@@ -22,7 +22,7 @@
 - Custom original creature models and textures; current client definitions use vanilla geometry/texture stand-ins.
 - Original sound files, custom particles, and bespoke attack animations.
 - Directional Ironback armor; current first pass reduces melee/projectile damage generally rather than checking the exact hit direction.
-- Additional creature families, pets/army commands, advanced armor/weapon tiers, custom biomes, and unlockable dimensions.
+- Further creature families and advanced behaviors, pets/army commands, advanced armor/weapon tiers, custom biomes, and unlockable dimensions.
 - In-game verification on Minecraft 26.62 and four-player mobile testing.
 - Final balance and performance testing.
 

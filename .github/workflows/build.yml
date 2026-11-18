@@ -42,7 +42,15 @@ jobs:
               assert identifier == client_id, f'Client/behavior identifier mismatch: {identifier} vs {client_id}'
               spawn_file=Path('Riftbound_BP/spawn_rules') / entity_file.name
               assert spawn_file.is_file(), f'Missing spawn rules for {identifier}'
-          print('Pack linkage, custom entity pairs, spawn rules, API dependency, and locales OK')
+          expected = {'ironback','glassfang','skitter','colossus','hollowmaw','gloommite','thornprowler'}
+          actual = {p.stem for p in Path('Riftbound_BP/entities').glob('*.json')}
+          assert expected <= actual, f'Missing creature definitions: {expected-actual}'
+          for rule_file in Path('Riftbound_BP/spawn_rules').glob('*.json'):
+              rule=json.load(open(rule_file))['minecraft:spawn_rules']
+              assert rule['conditions'], f'No spawn conditions: {rule_file}'
+              for condition in rule['conditions']:
+                  assert 'minecraft:herd' in condition and 'minecraft:weight' in condition, f'Missing herd/weight: {rule_file}'
+          print('Pack linkage, seven creature pairs, spawn ecology, API dependency, and locales OK')
           PY
       - name: Check JavaScript syntax
         run: node --input-type=module --check < Riftbound_BP/scripts/main.js

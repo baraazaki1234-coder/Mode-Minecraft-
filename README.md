@@ -23,12 +23,12 @@ A Minecraft Bedrock multiplayer add-on built around a shared survival world, mea
 - Four progression ranks with one-time Rift Shard rewards and short rank-up effects.
 - Death penalty that preserves the main inventory, drops one carried Rift Shard at the death site, and applies a short Weakness wound after respawn.
 - Four team identities with Arabic selection feedback, friendly-fire cancellation for tagged teammates, and player elimination scoring.
-- Four first-pass custom creature behavior definitions: the slow, heavily plated Ironback; fragile but high-damage Glassfang; tiny fast Skitter; and large slow Rift Colossus with a boss bar.
+- Seven first-pass custom creature behavior definitions with distinct ecology: solitary Ironback in forests/mountains, desert Glassfang pairs, underground Skitter and Gloommite packs, solitary cave Hollowmaw, forest/taiga Thornprowler, and the rare mountain Rift Colossus.
 - First-entry Arabic typewriter intro for each player, with movement and camera input locked during the sequence.
 - Built-in Minecraft encounter and combat sound cues with cooldowns.
 
 ## Current status
-The source is packaged by GitHub Actions and automated checks validate JSON, pack linkage, entity/client pairs, spawn-rule presence, locale files, and JavaScript syntax. It is **not yet verified inside Minecraft**. Current creature client definitions reuse vanilla geometry and textures as temporary visual stand-ins; bespoke models, textures, particles, and original sound assets remain future work. Back up your world before testing.
+The source is packaged by GitHub Actions and automated checks validate JSON, pack linkage, entity/client pairs, spawn-rule presence, locale files, and JavaScript syntax. It is **not yet verified inside Minecraft**. Current creature client definitions reuse vanilla geometry and textures as temporary visual stand-ins; bespoke models, textures, particles, and original sound assets remain future work. Spawn frequency and biome coverage still require in-game verification. Back up your world before testing.
 
 ## Death rules — first tuning pass
 Keep Inventory protects the player's main equipment and gathered inventory. If the player carries a Rift Shard, one is dropped at the death location for recovery or theft. Respawning also applies a 15-second Weakness wound. See [the death-system notes](docs/DEATH_SYSTEM.md).

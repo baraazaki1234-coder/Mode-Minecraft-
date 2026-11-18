@@ -182,7 +182,10 @@ const HOSTILE_XP = {
   "riftbound:ironback": 5,
   "riftbound:glassfang": 4,
   "riftbound:skitter": 3,
-  "riftbound:colossus": 30
+  "riftbound:colossus": 30,
+  "riftbound:hollowmaw": 8,
+  "riftbound:gloommite": 2,
+  "riftbound:thornprowler": 6
 };
 
 function getOrCreateObjective(id, displayName) {
@@ -410,7 +413,10 @@ world.afterEvents.entitySpawn.subscribe(({ entity }) => {
     "riftbound:colossus": "mob.warden.heartbeat",
     "riftbound:ironback": "mob.irongolem.walk",
     "riftbound:glassfang": "mob.spider.say",
-    "riftbound:skitter": "mob.silverfish.say"
+    "riftbound:skitter": "mob.silverfish.say",
+    "riftbound:hollowmaw": "mob.spider.say",
+    "riftbound:gloommite": "mob.silverfish.say",
+    "riftbound:thornprowler": "mob.spider.say"
   };
   const soundId = cues[entity.typeId];
   if (!soundId) return;
@@ -432,7 +438,10 @@ world.afterEvents.entityHitEntity.subscribe(({ damagingEntity, hitEntity }) => {
     "riftbound:colossus",
     "riftbound:ironback",
     "riftbound:glassfang",
-    "riftbound:skitter"
+    "riftbound:skitter",
+    "riftbound:hollowmaw",
+    "riftbound:gloommite",
+    "riftbound:thornprowler"
   ]);
 
   if (damagingEntity.typeId === "minecraft:player" && customCreatures.has(hitEntity.typeId)) {

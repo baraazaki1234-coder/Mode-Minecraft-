@@ -17,6 +17,7 @@
 - Faction war scoring: enemy player eliminations award two points to the killer's team, with personal elimination streaks and faction announcements.
 - Expedition cooperation: nearby same-team players receive a small XP assist for hostile creature kills.
 - Squad support: a nearby ally triggers brief protection for the injured teammate and a short repositioning speed boost for the supporting ally, with a ten-second cooldown.
+- Squad rally: a tagged player can use a vanilla goat horn to grant nearby same-team players within 24 blocks eight seconds of Speed and four seconds of Resistance; the caller has a 60-second cooldown.
 - Seven custom behavior entities with separate combat profiles and deliberate ecology: solo Ironback (forest/mountain), desert Glassfang (solo/pairs), underground Skitter (packs), solo underground Hollowmaw, underground Gloommite (packs), forest/taiga Thornprowler (solo), and rare mountain Rift Colossus (solo boss).
 - Matching spawn-rule files and client-entity definitions for all seven creatures; see `docs/CREATURE_ECOLOGY.md`.
 - Per-player first-entry Arabic typewriter intro, with movement and camera input disabled during the sequence and restored afterward.

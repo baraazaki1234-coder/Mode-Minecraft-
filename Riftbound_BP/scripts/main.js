@@ -328,6 +328,43 @@ world.afterEvents.entityHurt.subscribe(({ hurtEntity }) => {
   }
 });
 
+// A goat horn doubles as a field rally signal for a tagged squad.
+// Nearby teammates receive a short Speed/Resistance boost; 60s cooldown per caller.
+const rallyHornCooldowns = new Map();
+world.afterEvents.itemUse.subscribe(({ source, itemStack }) => {
+  if (source.typeId !== "minecraft:player" || itemStack.typeId !== "minecraft:goat_horn") return;
+  const team = getRiftTeam(source);
+  if (!team) {
+    source.sendMessage("§cاختر فريقًا أولًا حتى تستخدم نداء التجمع.");
+    return;
+  }
+  const now = system.currentTick;
+  const last = rallyHornCooldowns.get(source.id) ?? -100000;
+  if (now - last < 20 * 60) {
+    const remaining = Math.ceil((20 * 60 - (now - last)) / 20);
+    source.sendMessage("§7نداء التجمع غير جاهز بعد: " + remaining + " ثانية.");
+    return;
+  }
+  const allies = world.getPlayers().filter((ally) => {
+    if (getRiftTeam(ally) !== team || ally.dimension.id !== source.dimension.id) return false;
+    const dx = ally.location.x - source.location.x;
+    const dy = ally.location.y - source.location.y;
+    const dz = ally.location.z - source.location.z;
+    return dx * dx + dy * dy + dz * dz <= 24 * 24;
+  });
+  if (allies.length < 2) {
+    source.sendMessage("§eلا يوجد حليف قريب يسمع نداء التجمع.");
+    return;
+  }
+  rallyHornCooldowns.set(source.id, now);
+  for (const ally of allies) {
+    ally.addEffect("speed", 20 * 8, { amplifier: 0, showParticles: false });
+    ally.addEffect("resistance", 20 * 4, { amplifier: 0, showParticles: false });
+    ally.sendMessage("§b⚑ نداء تجمع الفريق! تحركوا معًا.");
+  }
+  world.sendMessage("§6⚑ فريق " + team + " أطلق نداء تجمع في ساحة المعركة!");
+});
+
 // First-entry cinematic. Bedrock's stable input-permission API can lock
 // movement and camera during the sequence; interaction buttons are not exposed
 // as a lockable category, so the script does not claim to disable every action.
@@ -526,5 +563,6 @@ world.afterEvents.playerLeave.subscribe(({ playerId }) => {
   surgeCooldowns.delete(playerId);
   creatureCueCooldowns.delete(playerId);
   squadSupportCooldowns.delete(playerId);
+  rallyHornCooldowns.delete(playerId);
   introPermissionStates.delete(playerId);
 });

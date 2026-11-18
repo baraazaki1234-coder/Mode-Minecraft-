@@ -74,7 +74,7 @@ jobs:
               assert comp['minecraft:durability']['max_durability'] > 0
           assert 'riftbound:riftbreaker' in json.load(open('Riftbound_RP/textures/item_texture.json'))['texture_data']
           script = Path('Riftbound_BP/scripts/main.js').read_text()
-          for token in ('rb_war_', 'rb_streak', 'team_assist', 'squadSupportCooldowns', 'Resistance'):
+          for token in ('rb_war_', 'rb_streak', 'team_assist', 'squadSupportCooldowns', 'resistance'):
               assert token in script, f'Missing multiplayer feature: {token}'
           assert 'world.afterEvents.entityHurt.subscribe' in script
           print('Pack linkage, creatures, gear, recipes, war scoring, squad support, API dependency, and locales OK')

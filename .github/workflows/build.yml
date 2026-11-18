@@ -57,7 +57,23 @@ jobs:
               assert 'minecraft:behavior.leap_at_target' in entities[mob], f'{mob} is missing its leap behavior'
           for mob in ('ironback','hollowmaw'):
               assert 'minecraft:behavior.hurt_by_target' in entities[mob], f'{mob} is missing retaliation behavior'
-          print('Pack linkage, seven creature pairs, spawn ecology, encounter AI, API dependency, and locales OK')
+          expected_items = {'emberguard_helmet','emberguard_chestplate','emberguard_leggings','emberguard_boots','riftbreaker'}
+          item_files = {p.stem for p in Path('Riftbound_BP/items').glob('*.json')}
+          assert expected_items <= item_files, f'Missing progression gear: {expected_items-item_files}'
+          for item_name in expected_items:
+              item = json.load(open(Path('Riftbound_BP/items') / f'{item_name}.json'))['minecraft:item']
+              assert item['description']['identifier'] == f'riftbound:{item_name}'
+              assert 'minecraft:icon' in item['components']
+              recipe = Path('Riftbound_BP/recipes') / f'{item_name}.json'
+              assert recipe.is_file(), f'Missing recipe for {item_name}'
+              assert json.load(open(recipe))['minecraft:recipe_shaped']['result']['item'] == f'riftbound:{item_name}'
+          armor_slots = {'emberguard_helmet':'slot.armor.head','emberguard_chestplate':'slot.armor.chest','emberguard_leggings':'slot.armor.legs','emberguard_boots':'slot.armor.feet'}
+          for item_name, slot in armor_slots.items():
+              comp = json.load(open(Path('Riftbound_BP/items') / f'{item_name}.json'))['minecraft:item']['components']
+              assert comp['minecraft:wearable']['slot'] == slot and comp['minecraft:wearable']['protection'] > 0
+              assert comp['minecraft:durability']['max_durability'] > 0
+          assert 'riftbound:riftbreaker' in json.load(open('Riftbound_RP/textures/item_texture.json'))['texture_data']
+          print('Pack linkage, seven creature pairs, spawn ecology, encounter AI, progression gear, recipes, API dependency, and locales OK')
           PY
       - name: Check JavaScript syntax
         run: node --input-type=module --check < Riftbound_BP/scripts/main.js

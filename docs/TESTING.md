@@ -11,6 +11,10 @@
 - [ ] Arabic item names render correctly in the player's selected language.
 - [ ] Custom items appear with intended icons and names.
 - [ ] Riftblade crafting recipe works in survival.
+- [ ] Each Emberguard armor recipe crafts the correct piece and each piece equips in its intended slot.
+- [ ] Armor protection and durability behave as intended on mobile.
+- [ ] Riftbreaker recipe, attack damage, durability, and axe enchantability behave as intended.
+- [ ] New gear icons resolve correctly and Arabic/English names render.
 - [ ] Riftblade damage, durability, enchantability, and Speed burst behave as designed.
 - [ ] Riftblade Speed burst triggers only while held and respects the eight-second cooldown.
 - [ ] Mining listed ores adds persistent Rift XP without script errors.

@@ -2,8 +2,29 @@
   "resource_pack_name": "RIFTBOUND",
   "texture_name": "atlas.items",
   "texture_data": {
-    "riftbound:rift_shard": { "textures": "textures/items/amethyst_shard" },
-    "riftbound:embersteel_ingot": { "textures": "textures/items/iron_ingot" },
-    "riftbound:riftblade": { "textures": "textures/items/iron_sword" }
+    "riftbound:rift_shard": {
+      "textures": "textures/items/amethyst_shard"
+    },
+    "riftbound:embersteel_ingot": {
+      "textures": "textures/items/iron_ingot"
+    },
+    "riftbound:riftblade": {
+      "textures": "textures/items/iron_sword"
+    },
+    "riftbound:emberguard_helmet": {
+      "textures": "textures/items/iron_helmet"
+    },
+    "riftbound:emberguard_chestplate": {
+      "textures": "textures/items/iron_chestplate"
+    },
+    "riftbound:emberguard_leggings": {
+      "textures": "textures/items/iron_leggings"
+    },
+    "riftbound:emberguard_boots": {
+      "textures": "textures/items/iron_boots"
+    },
+    "riftbound:riftbreaker": {
+      "textures": "textures/items/iron_axe"
+    }
   }
 }

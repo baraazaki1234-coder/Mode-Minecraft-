@@ -9,6 +9,8 @@
 - Behavior Pack and Resource Pack manifests with linked UUIDs.
 - Arabic (`ar_SA`) and English (`en_US`) localization for items and the first four custom creatures.
 - Rift Shard, Embersteel Ingot, Riftblade, and the weapon's short Speed surge.
+- Emberguard four-piece armor set (helmet, chestplate, leggings, boots) with wearable protection, durability, enchantability, Arabic/English names, and survival crafting recipes.
+- Riftbreaker heavy axe with distinct attack damage, durability, axe enchantability, icon mapping, and survival recipe.
 - Persistent mining/combat XP, four ranks, and one-time rank rewards.
 - Keep Inventory with one recoverable Rift Shard death drop and a temporary Weakness wound.
 - Four team-selection functions, same-team player damage cancellation, and elimination scoring.
@@ -23,7 +25,8 @@
 - Custom original creature models and textures; current client definitions use vanilla geometry/texture stand-ins.
 - Original sound files, custom particles, and bespoke attack animations.
 - Directional Ironback armor; current first pass reduces melee/projectile damage generally rather than checking the exact hit direction.
-- Further creature families and advanced behaviors, pets/army commands, advanced armor/weapon tiers, custom biomes, and unlockable dimensions.
+- Original armor/weapon textures and 3D models; current item icons temporarily reuse vanilla iron gear textures.
+- Additional armor tiers, weapon archetypes, custom regions/dimensions, structures and their guardian encounters, pets/army commands, and world unlock mechanics.
 - In-game verification on Minecraft 26.62 and four-player mobile testing; AI priorities, leap distances, and pack alert behavior need hands-on tuning.
 - Final balance and performance testing.
 

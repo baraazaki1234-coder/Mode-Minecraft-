@@ -50,7 +50,14 @@ jobs:
               assert rule['conditions'], f'No spawn conditions: {rule_file}'
               for condition in rule['conditions']:
                   assert 'minecraft:herd' in condition and 'minecraft:weight' in condition, f'Missing herd/weight: {rule_file}'
-          print('Pack linkage, seven creature pairs, spawn ecology, API dependency, and locales OK')
+          entities = {p.stem: json.load(open(p))['minecraft:entity']['components'] for p in Path('Riftbound_BP/entities').glob('*.json')}
+          for mob in ('skitter','gloommite'):
+              assert entities[mob].get('minecraft:behavior.hurt_by_target',{}).get('alert_same_type') is True, f'{mob} must alert its pack'
+          for mob in ('glassfang','thornprowler','skitter'):
+              assert 'minecraft:behavior.leap_at_target' in entities[mob], f'{mob} is missing its leap behavior'
+          for mob in ('ironback','hollowmaw'):
+              assert 'minecraft:behavior.hurt_by_target' in entities[mob], f'{mob} is missing retaliation behavior'
+          print('Pack linkage, seven creature pairs, spawn ecology, encounter AI, API dependency, and locales OK')
           PY
       - name: Check JavaScript syntax
         run: node --input-type=module --check < Riftbound_BP/scripts/main.js

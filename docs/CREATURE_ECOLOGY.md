@@ -1,22 +1,20 @@
-# RIFTBOUND creature ecology — first distribution pass
-
-This document defines spawn ecology rather than a universal random spawn pool.
+# RIFTBOUND creature ecology and encounter behavior
 
 ## Surface territories
-- **Ironback** — solitary; dark forest and mountain terrain; normal/hard. A slow plated territorial opponent.
-- **Glassfang** — solitary or pairs; desert at night; easy through hard. Fragile, fast, and dangerous at close range.
-- **Thornprowler** — solitary; forest and taiga at low light; normal/hard. A quick ambusher.
-- **Rift Colossus** — solitary and very rare; mountain surface at low light; hard only.
+- **Ironback** — solitary in dark forest/mountain territory. Slow, plated, and retaliates when attacked.
+- **Glassfang** — solitary or pairs in desert night encounters. Fragile, fast, and uses a short pounce to close distance.
+- **Thornprowler** — solitary in forest/taiga low light. A stronger ambusher with a higher leap, meant to punish players who ignore their surroundings.
+- **Rift Colossus** — solitary, very rare, mountain surface at low light, hard only. A large territorial boss.
 
 ## Underground encounters
-- **Skitter** — groups of 2–4 underground; common enough to make caves feel active.
-- **Gloommite** — groups of 3–5 underground; very small and individually fragile, but dangerous when allowed to surround a player.
-- **Hollowmaw** — one at a time underground; rare, slow, heavily resistant to knockback, and devastating at close range.
+- **Skitter** — packs of 2–4. Small and quick; pack members alert same-type allies when one is hurt, and can leap at a nearby target.
+- **Gloommite** — packs of 3–5. Individually weak; attacking one can draw nearby Gloommites of the same type into the fight.
+- **Hollowmaw** — rare solitary cave predator. Slow, resistant to knockback, and retaliates when struck.
 
-## Design rules
-- Herd size is deliberate: solitary creatures should not arrive as accidental packs, and pack creatures should create group pressure.
-- Surface and underground spawn caps are separated by the Bedrock spawn-rule components.
-- Biome tags constrain the surface territories; underground creatures use the Overworld monster biome filter.
-- Spawn weights are intentionally restrained to avoid turning every chunk into a mob crowd.
-- The first-pass client definitions still reuse vanilla geometry and textures. Original models, textures, animations, particles, and audio remain a separate art milestone.
-- Automated checks validate data shape and pack references, not actual in-game spawn frequency or mobile performance. Verify in a copied world on the target Bedrock version before calling the ecology balanced.
+## Encounter behavior rules
+- Pack response uses Bedrock's hurt-by-target behavior with same-type alerting. It is not a scripted global summon; only nearby same-type mobs already present can join.
+- Leap behavior is reserved for fast ambushers (Glassfang, Thornprowler) and the small Skitter. Other creatures retain their own movement and melee profile.
+- Retaliation behavior gives solitary defenders a reason to fight back after being attacked.
+- Herd sizes and biome restrictions remain intentional. No new universal spawn pool was introduced.
+- The current visuals still use vanilla stand-ins. Original models, textures, animation controllers, particles, and custom audio remain separate work.
+- Automated validation checks definitions and pack linkage only. Actual AI priority, leap feel, group alert radius, spawn rates, and mobile performance must be tested in a copied Bedrock world.
